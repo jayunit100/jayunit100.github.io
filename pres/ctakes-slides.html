@@ -134,156 +134,131 @@ layout: false
 .right-column[
   
 - Red Hat Emerging Technologies, Big Data Engineer 
-- Past Bioinformatician , Peerindex, BigData and Full Stack consultant
+- Minimotif abstract extraction, Structural homology titration
+- Integration of protein NMR methods.
+- Peerindex, BigData and Full Stack consultant
 - Apache Hadoop and Apache CTakes contributor 
 - Maintainer of HCFS initiative 
 - Apache BigTop Commiter
-```
-   
-   
-```
+---
+layout: false
+.left-column[
+  ## Apache BigTop: A friend to CTakes
+]
+.right-column[
   
-- Generates an arbitrarily large amount of data (like TeraGen)
-```
-   hadoop jar bps.jar org.bigtop.bigpetstore.generator.BPSGenerator 100000 bigpetstore/gen2
-```
-
-- BigPetStore data is meaningfull  (like WordCount), and has patterns in it (like MovieLens)
-```
-BigPetStore,storeCode_CA,13805  victor,goodman,Fri Dec 12 00:08:50 UTC 1969,7.5,cat-food
-BigPetStore,storeCode_CA,13806  victor,goodman,Tue Jan 06 15:38:55 UTC 1970,16.5,organic-dog-food
-BigPetStore,storeCode_CA,13807  victor,goodman,Sun Jan 11 23:37:40 UTC 1970,10.5,dog-food
-```
+- Integrate the entire hadoop ecosystem under one tent
+- RPM/DEB for Hive, Pig, Spark, HDFS, HBase, Zookeeper
+- Puppet recipes for installation
+- Vagrant and Docker recipes for deployment
+- Smoke Tests and the BigPetStore blueprint app for validation
+- A community around the emerging BigData OS 
 ]
+
+```
+  git clone apache/bigtop.git
+  cd bigtop-deploy/vm/vagrant-puppet
+  vagrant up
+  # you now have a working n node hadoop distribution.  :) 
+```
 ---
+layout:false
 .left-column[
-  ## How does it generate data?
+  ## Apache Spark
 ]
 .right-column[
- - Custom input formats for generation of large data sets.
+ - MapReduce : with in memory boosting, caching, iteration.
+ - RDDs : Lazy, distributed collections with provenance.
+ - Built for ETL+analytics.  
+ - MapReduce : Built for ETL.
+ - RDDs can be created in batch, or produced in Streams: Spark Streaming.
+ - Twitter Data pipeline == stream.   
+]
+---
+layout:false  
+.left-column[
+  ## Apache CTakes and BigTop.
+]
+.right-column[
+ - BigTop : More cool use cases, grows our commnunity.
+ - Sort of miss doing analytics and knowledge extraction
+ - Apache projects working together
 ```
-        ...
-        job.setInputFormatClass(
-            GeneratePetStoreTransactionsInputFormat.class);
-        ...
-        
+        name := "SparkSBT"
+        version := "1.0"
+        scalaVersion := "2.10.4"
+        libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
+        libraryDependencies +=  "org.scalatest" % "scalatest_2.10.0-M4" % "1.9-2.10.0-M4-B1"
+        libraryDependencies +=  "junit" % "junit" % "4.8.1" % "test"
+        libraryDependencies += "org.apache.spark" %% "spark-streaming" % "1.1.0"
+        libraryDependencies += "org.apache.spark" %% "spark-streaming-twitter" % "1.1.0"
+        libraryDependencies += "org.twitter4j" % "twitter4j-core" % "3.0.3"
+        libraryDependencies += "commons-cli" % "commons-cli" % "1.2"
+        libraryDependencies += "org.apache.ctakes" % "ctakes-core" % "3.2.0"
+        libraryDependencies += "org.apache.ctakes" % "ctakes-core-res" % "3.2.0"
+        libraryDependencies += "org.apache.ctakes" % "ctakes-constituency-parser" % "3.2.0"
+        libraryDependencies += "org.apache.ctakes" % "ctakes-clinical-pipeline" % "3.2.0"
+        resolvers += "Akka Repository" at "http://repo.akka.io/releases/"
+        resolvers += "opennlp sourceforge repo" at "http://opennlp.sourceforge.net/maven2"
+        resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/releases/" 
+        ```
+]
+--- 
+---
+layout:false  
+.left-column[
+  ## Apache CTakes and BigTop: How streams work in spark.
+  - every n seconds, new RDD created
+  - RDD Consumed in separate thread
+  - make sure you run with 2 threads ! SPARK-4040 (my first spark PR)
+  - After a while, do ```ssc.stop()```
+]
+.right-column[
+ - the code
+    ```
+    def startStream(intervalSecs:Int, partitionsEachInterval:Int, numTweetsToCollect:Int) = {
+      println("Initializing Streaming Spark Context...")
+      val conf = new SparkConf()
+        .setAppName(this.getClass.getSimpleName+""+System.currentTimeMillis())
+        .setMaster("local[2]")
+      val sc = new SparkContext(conf)
+      val ssc = new StreamingContext(sc, Seconds(intervalSecs))
+      val tweetStream = TwitterUtilsCtakes.createStream(ssc,
+        Utils.getAuth, Seq("medical"), 
+        StorageLevel.MEMORY_ONLY).map(gson.toJson(_))
+        .filter(!_.contains("boundingBoxCoordinates"))//some kind of spark jira to fix this.
+      var checks = 0;
+      tweetStream.foreachRDD(rdd => {
+        val outputRDD = rdd.repartition(partitionsEachInterval)
+        System.out.println(rdd.count());
+        numTweetsCollected += rdd.count()
+        System.out.println("\n\n\n PROGRESS ::: "+numTweetsCollected + " so far, out of " + numTweetsToCollect + " \n\n\n ");
+        if (numTweetsCollected > numTweetsToCollect) {
+            ssc.stop()
+            sc.stop();
+            System.exit(0)
+        }
+     })
+    /**
+    * This is where we invoke CTakes. For your CTAkes implementation, you would change the logic here
+    * to do something like store results to a file, or do a more sophisticated series of tasks.
+    */
+    val stream = tweetStream.map(
+        x =>
+            System.out.println("processed :::::::::: " + CtakesTermAnalyzer.analyze(x)));
+    stream.print();
+    ssc.start()
+    ssc.awaitTermination()
     }
-```
-- Custom Record Readers : Go on generating new records, and applying 
-patterns based on state (each split), person (buying frequency).
-```
-   int records = ((PetStoreTransactionInputSplit) 
-    inputSplit).records;
-   Iterator<KeyVal<String, String>> data = 
-   (new TransactionIteratorFactory(
-   records, ((PetStoreTransactionInputSplit) 
-   inputSplit).state)).getData();
-```
- 
- 
-
-.footnote[.red[*] We don't have sohpisticated patterns yet, but getting there...]
-]
-
----
-.left-column[
-  ## Where can I run it? 
-]
-.right-column[
-
-Any hadoop 2X instance:
-
-- Locally ! 
-
-  ```
-    mvn clean verify -P hive
-    mvn clean verify -P pig
-    mvn clean verify -P mahout
-  ```
-
-- On Red Hat Storage with Gluster.
+    
 
 ```
-   hadoop jar bps.jar \
-   org.bigtop.bigpetstore.generator.BPSGenerator \
-       100000 bigpetstore/gen2
-```
-
-- On Elastic MapReduce (EMR).
-
-```
-./elastic-mapreduce \
- --create --jar s3://bigpetstore/bigpetstore.jar \
- --main-class org.bigtop.bigpetstore.generator.BPSGenerator \
- --num-instances 10 \
- --arg 1000000 \
- --arg s3://bigpetstore/data/generated \
- --hadoop-version "2.2.0" \
- --master-instance-type m1.medium \
- --slave-instance-type m1.medium
-```
-
-- On OpenStack Sahara ? (working on it) 
-
 ]
 ---
-.left-column[
-  ## What does the data flow look like ?
-]
-.right-column[
-
-Generated data (Raw MapReduce)):
-```
-BigPetStore,storeCode_AK,10 lee,mccray,Mon Jan 05 19:46:54 UTC 1970,20.1,antelope-caller
-BigPetStore,storeCode_AK,100    shawna,peterson,Thu Dec 25 11:04:13 UTC 1969,10.5,dog-food
-```
-Cleaned data (pig):
-```
-BigPetStore storeCode_AK    1004    barbara nichols Wed Dec 31 12:03:19 UTC 1969    10.5    dog-food
-BigPetStore storeCode_AK    1005    barbara nichols Tue Jan 06 05:34:53 UTC 1970    20.1    antelope-caller
-```
-Aggregated data (pig post-processing script)
-```
-	CO  antelope snacks 2488
-	CT  cat-food    3336
-	CT  dog-food    3316
-	CT  fuzzy-collar    3348
-	NY  cat-food    5025
-	NY  dog-food    4922
-	NY  fish-food   5039
-	NY  steel-leash 5014
-	OK  cat-food    1979
-```
-
-- Finally: Visualize the last set of results in the bigpetstore web app:
-http://jayunit100.github.io/bigpetstore/
-
-- WIP : hive and mahout portions of the flow.
- - hive: Slices and hashes userids/products for recommender algs
- - mahout: Recommends products
-   - Requires more sophisticated user patterning, not yet impl.
-]
----
-name: last-page
-template: inverse
-
 ## Thats it !
-
-
-BigPetStore officially should be part of apache bigtop: 
-- https://issues.apache.org/jira/browse/BIGTOP-1089
-
-But currently... for rapid development cycles and engaging community,
-using github.
-
-- http://jayunit100.github.io/bigpetstore/
-- https://github.com/jayunit100/bigpetstore
-
-Contributors:
-Me ! (jayunit100@gmail.com) 
-Nigel Savage (nsavagejvm@gmail.com)  
-Matt Fennwick (mfennwick100@gmail.com)
-    </textarea>
+## Thanks to the CTakes group for helping learn the CTAkes API.
+---     
+</textarea>
     <script src="http://gnab.github.com/remark/downloads/remark-0.6.2.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       var hljs = remark.highlighter.engine;

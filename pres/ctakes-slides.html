@@ -255,9 +255,28 @@ layout:false
 
 ]
 ---
+```
+val builder = new AggregateBuilder
+builder.add(SimpleSegmentAnnotator.createAnnotatorDescription());
+builder.add(org.apache.ctakes.core.ae.SentenceDetector.createAnnotatorDescription());
+builder.add(TokenizerAnnotatorPTB.createAnnotatorDescription());
+builder.add(ContextDependentTokenizerAnnotator.createAnnotatorDescription());
+builder.add(org.apache.ctakes.postagger.POSTagger.createAnnotatorDescription());
+builder.add(org.apache.ctakes.chunker.ae.Chunker.createAnnotatorDescription());
+builder.add(AnalysisEngineFactory.createPrimitiveDescription(classOf[CopyNPChunksToLookupWindowAnnotations]));
+builder.add(AnalysisEngineFactory.createPrimitiveDescription(classOf[RemoveEnclosedLookupWindows]));
+//builder.add(UmlsDictionaryLookupAnnotator.createAnnotatorDescription()); builder.add(PolarityCleartkAnalysisEngine.createAnnotatorDescription()); return builder.createAggregateDescription(); }
+builder.createAggregate()
+
+```
+
+---
+---
 ## Thats it !
 ## Thanks to the CTakes group for helping learn the CTAkes API.
 ---     
+
+
 </textarea>
     <script src="http://gnab.github.com/remark/downloads/remark-0.6.2.min.js" type="text/javascript"></script>
     <script type="text/javascript">

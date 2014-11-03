@@ -134,130 +134,33 @@ layout: false
 .right-column[
   
 - Red Hat Emerging Technologies, Big Data Engineer 
-- Minimotif abstract extraction, Structural homology titration
+- iMinimotif abstract extraction, Structural homology titration
 - Integration of protein NMR methods.
 - Peerindex, BigData and Full Stack consultant
 - Apache Hadoop and Apache CTakes contributor 
 - Maintainer of HCFS initiative 
 - Apache BigTop Commiter
+]
 ---
 layout: false
 .left-column[
-  ## Apache BigTop: A friend to CTakes
-]
-.right-column[
-  
-- Integrate the entire hadoop ecosystem under one tent
-- RPM/DEB for Hive, Pig, Spark, HDFS, HBase, Zookeeper
-- Puppet recipes for installation
-- Vagrant and Docker recipes for deployment
-- Smoke Tests and the BigPetStore blueprint app for validation
-- A community around the emerging BigData OS 
-]
-
-```
-  git clone apache/bigtop.git
-  cd bigtop-deploy/vm/vagrant-puppet
-  vagrant up
-  # you now have a working n node hadoop distribution.  :) 
-```
----
-layout:false
-.left-column[
-  ## Apache Spark
-]
-.right-column[
- - MapReduce : with in memory boosting, caching, iteration.
- - RDDs : Lazy, distributed collections with provenance.
- - Built for ETL+analytics.  
- - MapReduce : Built for ETL.
- - RDDs can be created in batch, or produced in Streams: Spark Streaming.
- - Twitter Data pipeline == stream.   
-]
----
-layout:false  
-.left-column[
-  ## Apache CTakes and BigTop.
-]
-.right-column[
- - BigTop : More cool use cases, grows our commnunity.
- - Sort of miss doing analytics and knowledge extraction
- - Apache projects working together
-```
-        name := "SparkSBT"
-        version := "1.0"
-        scalaVersion := "2.10.4"
-        libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
-        libraryDependencies +=  "org.scalatest" % "scalatest_2.10.0-M4" % "1.9-2.10.0-M4-B1"
-        libraryDependencies +=  "junit" % "junit" % "4.8.1" % "test"
-        libraryDependencies += "org.apache.spark" %% "spark-streaming" % "1.1.0"
-        libraryDependencies += "org.apache.spark" %% "spark-streaming-twitter" % "1.1.0"
-        libraryDependencies += "org.twitter4j" % "twitter4j-core" % "3.0.3"
-        libraryDependencies += "commons-cli" % "commons-cli" % "1.2"
-        libraryDependencies += "org.apache.ctakes" % "ctakes-core" % "3.2.0"
-        libraryDependencies += "org.apache.ctakes" % "ctakes-core-res" % "3.2.0"
-        libraryDependencies += "org.apache.ctakes" % "ctakes-constituency-parser" % "3.2.0"
-        libraryDependencies += "org.apache.ctakes" % "ctakes-clinical-pipeline" % "3.2.0"
-        resolvers += "Akka Repository" at "http://repo.akka.io/releases/"
-        resolvers += "opennlp sourceforge repo" at "http://opennlp.sourceforge.net/maven2"
-        resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/releases/" 
-        ```
-]
---- 
----
-layout:false  
-.left-column[
-  ## Apache CTakes and BigTop: How streams work in spark.
-  - every n seconds, new RDD created
-  - RDD Consumed in separate thread
-  - make sure you run with 2 threads ! SPARK-4040 (my first spark PR)
-  - After a while, do ```ssc.stop()```
+  ## Steps to add Spark Streaming to your App
 ]
 .right-column[
 
-    ```
-    def startStream(intervalSecs:Int, partitionsEachInterval:Int, numTweetsToCollect:Int) = {
-      println("Initializing Streaming Spark Context...")
-      val conf = new SparkConf().setAppName(this.getClass.getSimpleName+""+System.currentTimeMillis())
-        .setMaster("local[2]")
-      val sc = new SparkContext(conf)
-      val ssc = new StreamingContext(sc, Seconds(intervalSecs))
-      val tweetStream = TwitterUtilsCtakes.createStream(ssc,
-        Utils.getAuth, Seq("medical"), 
-        StorageLevel.MEMORY_ONLY).map(gson.toJson(_))
-        .filter(!_.contains("boundingBoxCoordinates"))//some kind of spark jira to fix this.
-      var checks = 0;
-      tweetStream.foreachRDD(rdd => {
-        val outputRDD = rdd.repartition(partitionsEachInterval)
-        System.out.println(rdd.count());
-        numTweetsCollected += rdd.count()
-        System.out.println("\n\n\n PROGRESS ::: "+numTweetsCollected + " so far, out of " + numTweetsToCollect + " \n\n\n ");
-        if (numTweetsCollected > numTweetsToCollect) {
-            ssc.stop()
-            sc.stop();
-            System.exit(0)
-        }
-     })
-    /**
-    * This is where we invoke CTakes. For your CTAkes implementation, you would change the logic here
-    * to do something like store results to a file, or do a more sophisticated series of tasks.
-    */
-    val stream = tweetStream.map(
-        x =>
-            System.out.println("processed :::::::::: " + CtakesTermAnalyzer.analyze(x)));
-    stream.print();
-    ssc.start()
-    ssc.awaitTermination()
-    }
-    
-    ```
-    :w
+- Create a thread for consuming data
+- Extend the DSstream, and override ```getReceiver```
+- Launch the thread in your implementation of the Receiver
+- make sure to return from onStart(), and launch your thread in it.
+- Make sure to implement onStop to close your receiver.
 
 ]
 ---
+see jayunit100/SparkBlueprint on github for details, or the ctakes sandbox.
+thanks to databricks for bootstrapping the community w/ a reference twitter4j wrapper.
 ---
-## Thats it !
----     
+
+
 </textarea>
     <script src="http://gnab.github.com/remark/downloads/remark-0.6.2.min.js" type="text/javascript"></script>
     <script type="text/javascript">

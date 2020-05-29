@@ -1,13 +1,10 @@
-Jay Vyas is a Kubernetes Engineer at VMWare, 
-and has worked on K8s at its core since its inception in 2015 as an open source project.  
-Jay Vyas is a Kubernetes Engineer at VMWare, and has worked on K8s at its core since
-its inception in 2015 as an open source project.  Jay has served as the Engineering lead, 
-and has moved several companies, including Blackduck software, to Kubernetes and SaaS based platforms, 
-thus delivering Kubernetes based solutions to 1000s of customers around the world.  
-Having worked at the intersection of Big Data, scale-out storage, and cloud native technology 
-- he deeply believes that the core value of microservices is manifests in how it enables teams to innovate independently.  
-Jay has served as the Engineering lead, and has moved several companies, including Blackduck software, 
-to Kubernetes and SaaS based platforms, 
-thus delivering Kubernetes based solutions to 1000s of customers around the world.  
-Having worked at the intersection of Big Data, scale-out storage, and cloud native technology 
-- he deeply believes that the core value of microservices is manifests in how it enables teams to innovate independently.  
+I'm a Kubernetes Engineer at VMWare, and has worked on K8s at its core since
+its inception in 2015 as an open source project.  Currently my major open source
+work is aligned with K8s and the VMWare Tanzu project.
+
+In my former life, I've: 
+- served as the Engineering lead, at blackduck (Synopsys), moving a 100 million dollar SaaS to the Cloud on K8s
+- worked on core scheduling, api, e2e, and performance features Kubernetes core at Red Hat.
+- consulted for Universities, publically traded companies, and startups - moving them towards scalable, microservice and cloud based solutions that deliver immediate value.
+
+Reach out to me about collaborating on stuff anytime!

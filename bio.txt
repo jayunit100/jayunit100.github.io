@@ -1,6 +1,7 @@
-I'm a Kubernetes Engineer at VMWare, and has worked on K8s at its core since
-its inception in 2015 as an open source project.  Currently my major open source
-work is aligned with K8s and the VMWare Tanzu project.
+I'm a Kubernetes Engineer at VMWare, and have worked on K8s (core) since
+its inception in 2015 as an open source project.  
+
+Currently my major open source work is aligned with K8s and the VMWare Tanzu project.
 
 In my former life, I've: 
 - served as the Engineering lead, at blackduck (Synopsys), moving a 100 million dollar SaaS to the Cloud on K8s

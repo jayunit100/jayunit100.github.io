@@ -7,5 +7,6 @@ In my former life, I've:
 - served as the Engineering lead, at blackduck (Synopsys), moving a 100 million dollar SaaS to the Cloud on K8s
 - worked on core scheduling, api, e2e, and performance features Kubernetes core at Red Hat.
 - consulted for Universities, publically traded companies, and startups - moving them towards scalable, microservice and cloud based solutions that deliver immediate value.
+- Am a member, PMC, and commiter of the ASF, contributing to projects such as Bigtop, hadoop, spark, storm, and Ctakes.
 
 Reach out to me about collaborating on stuff anytime!

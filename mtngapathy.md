@@ -19,6 +19,7 @@ Dont force 10 people to click on a URL all at once and fumble around.
 - Don't use pronouns like "the code". Show the code.
 - Remeber that linking someone to 2000 lines of go code probably wont answer their question in any short time period.
 - Use public slacks, so that you can easily share the channel as part of your screen sharing. 
+- use bullets in slack threads so people can skip the boilerplate easily.
 
 # ORG
 - Always clarify who "we" is so there's no ownership ambiguety.

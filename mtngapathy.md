@@ -8,7 +8,7 @@ PRs welcome
 - Dont create unnecessary meeting pressure let folks know this meeting is OPTIONAL.
   - But... to counter this - make sure CAMERAS ARE ON in mtngs, so those who DO come are really there and participating.  
 - Say good morning to people in a public channel when you join work for the day, and say goodbye when you leave.  
-- Dont say hellp to people in a DM nohello.org.  Thats totally silly.
+- Dont say hello to people in a DM nohello.org.  Thats totally silly.
  
 # EFFICIENCY
 

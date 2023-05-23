@@ -2,13 +2,16 @@
 
 PRs welcome 
 
-# TEAM
-- Dont create unnecessary meeting pressure let folks know this meeting is OPTIONAL
-  - But...  Turn your camera on, or at least acknowledge that your camera is off.  
-  - Don't create a FOMO culture where people come just to hear whats going on and dont participate.
-- Say hello to people when you join work for the day, and say goodbye when you leave
+# MEETINGS
 
-# EFFICIENCY 
+- Don't create a FOMO culture where people come just to hear whats going on and dont participate.
+- Dont create unnecessary meeting pressure let folks know this meeting is OPTIONAL.
+  - But... to counter this - make sure CAMERAS ARE ON in mtngs, so those who DO come are really there and participating.  
+- Say good morning to people in a public channel when you join work for the day, and say goodbye when you leave.  
+- Dont say hellp to people in a DM nohello.org.  Thats totally silly.
+ 
+# EFFICIENCY
+
 Dont force 10 people to click on a URL all at once and fumble around.
 - Screen share the whole time.  Even if its mtng notes. 
   - Buy a 2nd monitor if you have to.  
